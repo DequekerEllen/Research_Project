@@ -29,53 +29,61 @@ class _UriRecordSetting extends State<UriRecordSetting> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Set Record'),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.always,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  DropdownButton(
-                    value: _dropButtonValue,
-                    items: ndef.UriRecord.prefixMap.map((value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        _dropButtonValue = value;
-                      });
-                    },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Write Uri Record'),
+        backgroundColor: Color(0xFFE86969),
+        shadowColor: Colors.grey[100],
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.always,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                DropdownButton(
+                  value: _dropButtonValue,
+                  items: ndef.UriRecord.prefixMap.map((value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      _dropButtonValue = value;
+                    });
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'content'),
+                  controller: _contentController,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF103042),
+                    maximumSize: Size(320, 50),
+                    minimumSize: Size(300, 50),
                   ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'content'),
-                    controller: _contentController,
-                  ),
-                  ElevatedButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      if ((_formKey.currentState as FormState).validate()) {
-                        Navigator.pop(
-                            context,
-                            ndef.UriRecord(
-                              prefix: _dropButtonValue,
-                              content: (_contentController.text),
-                            ));
-                      }
-                    },
-                  ),
-                ],
-              ),
+                  child: Text('OK'),
+                  onPressed: () {
+                    if ((_formKey.currentState as FormState).validate()) {
+                      Navigator.pop(
+                          context,
+                          ndef.UriRecord(
+                            prefix: _dropButtonValue,
+                            content: (_contentController.text),
+                          ));
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),

@@ -1,6 +1,7 @@
 // ignore_for_file: unused_field, depend_on_referenced_packages, unused_import, library_private_types_in_public_api, avoid_unnecessary_containers
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' show Platform, sleep;
 
 import 'package:flutter/foundation.dart';
@@ -68,6 +69,13 @@ class _WriteNfcScreenState extends State<WriteNfcScreen>
         fontSize: 15.0);
   }
 
+  String toText(Iterable<int>? data) {
+    print(data);
+    final String text = utf8.decode(data?.toList() ?? []);
+    print(text);
+    return text.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +92,11 @@ class _WriteNfcScreenState extends State<WriteNfcScreen>
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF103042),
+                    maximumSize: Size(320, 50),
+                    minimumSize: Size(300, 50),
+                  ),
                   onPressed: () {
                     showDialog(
                       context: context,
@@ -143,9 +156,10 @@ class _WriteNfcScreenState extends State<WriteNfcScreen>
                     );
                   },
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.add),
                       Text("Add record"),
+                      Icon(Icons.add),
                     ],
                   ),
                 )
@@ -163,8 +177,42 @@ class _WriteNfcScreenState extends State<WriteNfcScreen>
                   (index) => GestureDetector(
                     child: Padding(
                       padding: const EdgeInsets.all(10),
-                      child: Text(
-                          'id:${_records![index].idString}\ntnf:${_records![index].tnf}\ntype:${_records![index].type?.toHexString()}\npayload:${_records![index].payload?.toHexString()}\n'),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _records![index].type?.toHexString() == '54'
+                              ? Text(
+                                  'Value: ${toText(_records![index].payload?.getRange(3, _records![index].payload!.length))}\n')
+                              : Text(
+                                  '${toText(_records![index].payload?.getRange(0, _records![index].payload!.length))}\n'),
+                          IconButton(
+                            onPressed: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) {
+                                    return NDEFRecordSetting(
+                                        record: _records![index]);
+                                  },
+                                ),
+                              );
+                              if (result != null) {
+                                if (result is ndef.NDEFRecord) {
+                                  setState(
+                                    () {
+                                      _records![index] = result;
+                                    },
+                                  );
+                                } else if (result is String &&
+                                    result == "Delete") {
+                                  _records!.removeAt(index);
+                                }
+                              }
+                            },
+                            icon: Icon(Icons.edit),
+                          ),
+                        ],
+                      ),
                     ),
                     onTap: () async {
                       final result = await Navigator.push(

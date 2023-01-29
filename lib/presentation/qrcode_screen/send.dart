@@ -38,6 +38,9 @@ class _QrSendScreenState extends State<QrSendScreen> {
             InputField(
                 controller: textEditingController,
                 generateQR: () => generateQRCode()),
+            Padding(
+              padding: EdgeInsets.only(top: 20),
+            ),
             QRWidget(data: textEditingController.text),
           ],
         ));

@@ -52,104 +52,124 @@ class _NDEFRecordSetting extends State<NDEFRecordSetting> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Set Record'),
-        ),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.always,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  DropdownButton(
-                    value: _dropButtonValue,
-                    items: [
-                      DropdownMenuItem(
-                        value: 0,
-                        child: Text('empty'),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit'),
+        backgroundColor: Color(0xFFE86969),
+        shadowColor: Colors.grey[100],
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.always,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                DropdownButton(
+                  value: _dropButtonValue,
+                  items: [
+                    DropdownMenuItem(
+                      value: 0,
+                      child: Text('empty'),
+                    ),
+                    DropdownMenuItem(
+                      value: 1,
+                      child: Text('nfcWellKnown'),
+                    ),
+                    DropdownMenuItem(
+                      value: 2,
+                      child: Text('media'),
+                    ),
+                    DropdownMenuItem(
+                      value: 3,
+                      child: Text('absoluteURI'),
+                    ),
+                    DropdownMenuItem(value: 4, child: Text('nfcExternal')),
+                    DropdownMenuItem(value: 5, child: Text('unchanged')),
+                    DropdownMenuItem(
+                      value: 6,
+                      child: Text('unknown'),
+                    ),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _dropButtonValue = value as int;
+                    });
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'identifier'),
+                  validator: (v) {
+                    return v!.trim().length % 2 == 0
+                        ? null
+                        : 'length must be even';
+                  },
+                  controller: _identifierController,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'type'),
+                  validator: (v) {
+                    return v!.trim().length % 2 == 0
+                        ? null
+                        : 'length must be even';
+                  },
+                  controller: _typeController,
+                ),
+                TextFormField(
+                  decoration: InputDecoration(labelText: 'payload'),
+                  validator: (v) {
+                    return v!.trim().length % 2 == 0
+                        ? null
+                        : 'length must be even';
+                  },
+                  controller: _payloadController,
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 20),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF103042),
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.all(24),
                       ),
-                      DropdownMenuItem(
-                        value: 1,
-                        child: Text('nfcWellKnown'),
+                      child: Text('OK'),
+                      onPressed: () {
+                        if ((_formKey.currentState as FormState).validate()) {
+                          Navigator.pop(
+                              context,
+                              ndef.NDEFRecord(
+                                  tnf: ndef
+                                      .TypeNameFormat.values[_dropButtonValue],
+                                  type: (_typeController.text).toBytes(),
+                                  id: (_identifierController.text).toBytes(),
+                                  payload:
+                                      (_payloadController.text).toBytes()));
+                        }
+                      },
+                    ),
+                    SizedBox(width: 10),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF103042),
+                        shape: CircleBorder(),
+                        padding: EdgeInsets.all(20),
                       ),
-                      DropdownMenuItem(
-                        value: 2,
-                        child: Text('media'),
-                      ),
-                      DropdownMenuItem(
-                        value: 3,
-                        child: Text('absoluteURI'),
-                      ),
-                      DropdownMenuItem(value: 4, child: Text('nfcExternal')),
-                      DropdownMenuItem(value: 5, child: Text('unchanged')),
-                      DropdownMenuItem(
-                        value: 6,
-                        child: Text('unknown'),
-                      ),
-                    ],
-                    onChanged: (value) {
-                      setState(() {
-                        _dropButtonValue = value as int;
-                      });
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'identifier'),
-                    validator: (v) {
-                      return v!.trim().length % 2 == 0
-                          ? null
-                          : 'length must be even';
-                    },
-                    controller: _identifierController,
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'type'),
-                    validator: (v) {
-                      return v!.trim().length % 2 == 0
-                          ? null
-                          : 'length must be even';
-                    },
-                    controller: _typeController,
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'payload'),
-                    validator: (v) {
-                      return v!.trim().length % 2 == 0
-                          ? null
-                          : 'length must be even';
-                    },
-                    controller: _payloadController,
-                  ),
-                  ElevatedButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      if ((_formKey.currentState as FormState).validate()) {
-                        Navigator.pop(
-                            context,
-                            ndef.NDEFRecord(
-                                tnf: ndef
-                                    .TypeNameFormat.values[_dropButtonValue],
-                                type: (_typeController.text).toBytes(),
-                                id: (_identifierController.text).toBytes(),
-                                payload: (_payloadController.text).toBytes()));
-                      }
-                    },
-                  ),
-                  ElevatedButton(
-                    child: Text('Delete'),
-                    onPressed: () {
-                      if ((_formKey.currentState as FormState).validate()) {
-                        Navigator.pop(context, 'Delete');
-                      }
-                    },
-                  ),
-                ],
-              ),
+                      onPressed: () {
+                        if ((_formKey.currentState as FormState).validate()) {
+                          Navigator.pop(context, 'Delete');
+                        }
+                      },
+                      child: Icon(Icons.delete),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
         ),

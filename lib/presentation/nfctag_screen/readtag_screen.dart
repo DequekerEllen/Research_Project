@@ -188,7 +188,6 @@ class _MyNFCWidgetState extends State<MyNFCWidget>
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Colors.grey[200],
         child: TextButton(
           style: ElevatedButton.styleFrom(
             foregroundColor: Color(0xFFE86969),

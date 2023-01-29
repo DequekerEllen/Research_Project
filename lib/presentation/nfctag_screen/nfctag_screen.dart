@@ -9,7 +9,7 @@ class NfctagScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8F6F0),
+      // backgroundColor: Color(0xFFF8F6F0),
       body: Column(
         children: [
           CachedNetworkImage(

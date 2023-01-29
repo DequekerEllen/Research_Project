@@ -13,32 +13,32 @@ class InputField extends StatelessWidget {
       padding: EdgeInsets.all(8.0),
       child: TextFormField(
         controller: controller,
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(color: Color(0xFF103042)),
         decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(5.5),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(5.5),
             ),
-            enabledBorder: OutlineInputBorder(),
-            suffixIcon: Container(
-              child: Padding(
-                padding: EdgeInsets.all(5),
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.white,
-                  ),
-                  onPressed: () => generateQR(),
-                  child: Text(
-                    'Generate',
-                    style: TextStyle(color: Color(0xFF103042)),
-                  ),
+            suffixIcon: Padding(
+              padding: EdgeInsets.only(right: 10, top: 5, bottom: 5, left: 5),
+              child: TextButton(
+                style: TextButton.styleFrom(
+                  backgroundColor: Color(0xFF103042),
+                ),
+                onPressed: () => generateQR(),
+                child: Text(
+                  'Generate',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
             filled: true,
-            fillColor: Color(0xFF103042),
+            fillColor: Colors.grey[200],
             label: Text(
               'Enter data',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Color(0xFF103042)),
             )),
       ),
     );
