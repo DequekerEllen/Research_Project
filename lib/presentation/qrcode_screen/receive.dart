@@ -1,8 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app/presentation/home_screen/home_screen.dart';
+import 'package:flutter_app/presentation/qrcode_screen/qrcode_screen.dart';
+import 'package:flutter_app/widgets/bottom_navbar.dart';
+import 'package:icons_plus/icons_plus.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class QrReceiveScreen extends StatefulWidget {
   const QrReceiveScreen({Key? key}) : super(key: key);
@@ -38,9 +43,19 @@ class _QrReceiveScreenState extends State<QrReceiveScreen> {
     // readQr();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mobile Scanner'),
-        backgroundColor: Color(0xFFE86969),
-      ),
+          title: const Text('Mobile Scanner'),
+          backgroundColor: Color(0xFFE86969),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ),
+              );
+            },
+          )),
       body: Column(
         children: [
           Expanded(flex: 4, child: _buildQrView(context)),
@@ -57,16 +72,18 @@ class _QrReceiveScreenState extends State<QrReceiveScreen> {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFFE86969),
+                            backgroundColor: Color(0xFF103042),
                             maximumSize: Size(320, 60),
                             minimumSize: Size(100, 50),
                           ),
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        QrDataScreen(data: result)));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    QrDataScreen(data: result),
+                              ),
+                            );
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -102,7 +119,7 @@ class _QrReceiveScreenState extends State<QrReceiveScreen> {
       key: qrKey,
       onQRViewCreated: _onQRViewCreated,
       overlay: QrScannerOverlayShape(
-          borderColor: Colors.red,
+          borderColor: Color(0xFFE86969),
           borderRadius: 10,
           borderLength: 30,
           borderWidth: 10,
@@ -134,21 +151,121 @@ class QrDataScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('data:  ${data!.code}');
     return Scaffold(
-        appBar: AppBar(
-            title: const Text('Data received'),
-            automaticallyImplyLeading: false),
-        body: Column(
-          children: [
-            Text('${data!.code}'),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => HomeScreen()));
-              },
-              child: Text('Go to home'),
-            )
-          ],
-        ));
+      appBar: AppBar(
+          title: const Text('Data received'),
+          backgroundColor: Color(0xFFE86969),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => QrReceiveScreen(),
+                ),
+              );
+            },
+          )),
+      body: Column(
+        children: [
+          data!.code.toString().contains('http')
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(60),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey[200],
+                        ),
+                        child: Icon(
+                          FontAwesome.globe,
+                          size: 100,
+                          color: Color(0xFF103042),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Text(
+                        '${data!.code}',
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF103042),
+                          maximumSize: Size(320, 50),
+                          minimumSize: Size(300, 50),
+                        ),
+                        onPressed: () async {
+                          var url = '${data!.code}';
+                          if (await canLaunchUrlString(url)) {
+                            await launchUrlString(
+                              url,
+                            );
+                            //forceWebView is true now
+                          } else {
+                            throw 'Could not launch $url';
+                          }
+                        },
+                        child: Text('Open Link'),
+                      )
+                    ],
+                  ),
+                )
+              : Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Container(
+                        padding: EdgeInsets.all(60),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.grey[200],
+                        ),
+                        child: Icon(
+                          Icons.description_rounded,
+                          size: 100,
+                          color: Color(0xFF103042),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Text(
+                        '${data!.code}',
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFF103042),
+                          maximumSize: Size(320, 50),
+                          minimumSize: Size(300, 50),
+                        ),
+                        onPressed: () async {
+                          await Clipboard.setData(
+                              ClipboardData(text: '${data!.code}'));
+                          // copied successfully
+                        },
+                        child: Text('Copy Text'),
+                      )
+                    ],
+                  ),
+                )
+        ],
+      ),
+    );
   }
 }

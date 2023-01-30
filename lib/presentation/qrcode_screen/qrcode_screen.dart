@@ -1,7 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:floating_bottom_navigation_bar/floating_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/presentation/nfctag_screen/nfctag_screen.dart';
 import 'package:flutter_app/presentation/qrcode_screen/receive.dart';
 import 'package:flutter_app/presentation/qrcode_screen/send.dart';
+import 'package:flutter_app/widgets/bottom_navbar.dart';
 
 class QrcodeScreen extends StatelessWidget {
   @override
